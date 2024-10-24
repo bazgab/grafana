@@ -254,24 +254,26 @@ export const CustomValue: StoryObj<PropsAndCustomArgs> = {
   },
 };
 
+const loadOptionsAction = action('loadOptions called');
 const AsyncStory: StoryFn<PropsAndCustomArgs> = (args) => {
   // Combobox
   const [selectedOption, setSelectedOption] = useState<ComboboxOption<string> | null>(null);
 
   // AsyncSelect
-  const [asyncSelectValue, setAsyncSelectValue] = useState<SelectableValue<string> | null>(null);
+  // const [asyncSelectValue, setAsyncSelectValue] = useState<SelectableValue<string> | null>(null);
 
   // This simulates a kind of search API call
   const loadOptionsWithLabels = useCallback((inputValue: string) => {
+    loadOptionsAction(inputValue);
     console.info(`Load options called with value '${inputValue}' `);
     return fakeSearchAPI(`http://example.com/search?query=${inputValue}`);
   }, []);
 
-  const loadOptionsOnlyValues = useCallback((inputValue: string) => {
-    return fakeSearchAPI(`http://example.com/search?query=${inputValue}`).then((options) =>
-      options.map((opt) => ({ value: opt.label! }))
-    );
-  }, []);
+  // const loadOptionsOnlyValues = useCallback((inputValue: string) => {
+  //   return fakeSearchAPI(`http://example.com/search?query=${inputValue}`).then((options) =>
+  //     options.map((opt) => ({ value: opt.label! }))
+  //   );
+  // }, []);
 
   return (
     <>
@@ -292,7 +294,7 @@ const AsyncStory: StoryFn<PropsAndCustomArgs> = (args) => {
         />
       </Field>
 
-      <Field
+      {/* <Field
         label="Options without labels"
         description="Or without labels, where consumer can just pass in a raw scalar value Value"
       >
@@ -307,9 +309,9 @@ const AsyncStory: StoryFn<PropsAndCustomArgs> = (args) => {
           }}
           createCustomValue={args.createCustomValue}
         />
-      </Field>
+      </Field> */}
 
-      <Field label="Compared to AsyncSelect">
+      {/* <Field label="Compared to AsyncSelect">
         <AsyncSelect
           id="test-async-select"
           placeholder="Select an option"
@@ -321,7 +323,7 @@ const AsyncStory: StoryFn<PropsAndCustomArgs> = (args) => {
             setAsyncSelectValue(val);
           }}
         />
-      </Field>
+      </Field> */}
     </>
   );
 };

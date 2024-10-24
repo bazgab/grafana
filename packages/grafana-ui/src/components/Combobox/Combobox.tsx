@@ -1,7 +1,7 @@
 import { cx } from '@emotion/css';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useCombobox } from 'downshift';
-import { useCallback, useId, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useRef, useState } from 'react';
 
 import { useStyles2 } from '../../themes';
 import { t } from '../../utils/i18n';
@@ -69,6 +69,15 @@ function itemFilter<T extends string | number>(inputValue: string) {
 }
 
 const asyncNoop = () => Promise.resolve([]);
+
+function useValueChange<T>(value: T, fn: Function) {
+  const ref = useRef<T | null>(null);
+
+  if (ref.current !== value) {
+    ref.current = value;
+    fn();
+  }
+}
 
 /**
  * A performant Select replacement.
@@ -141,7 +150,10 @@ export const Combobox = <T extends string | number>({
     getItemProps,
     isOpen,
     highlightedIndex,
+
     setInputValue,
+    inputValue,
+
     openMenu,
     closeMenu,
     selectItem,
@@ -195,7 +207,7 @@ export const Combobox = <T extends string | number>({
       setItems(customValueOption ? [customValueOption, ...filteredItems] : filteredItems);
     },
 
-    onIsOpenChange: ({ isOpen }) => {
+    onIsOpenChange: ({ inputValue, isOpen }) => {
       // Default to displaying all values when opening
       if (isOpen && !isAsync) {
         setItems(options);
@@ -204,7 +216,8 @@ export const Combobox = <T extends string | number>({
 
       if (isOpen && isAsync) {
         setAsyncLoading(true);
-        loadOptions('').then((options) => {
+
+        loadOptions(inputValue ?? '').then((options) => {
           setItems(options);
           setAsyncLoading(false);
         });
@@ -236,6 +249,10 @@ export const Combobox = <T extends string | number>({
       isOpen
       ? 'search'
       : 'angle-down';
+
+  useValueChange(inputValue, () => {
+    console.log('inputValue', inputValue);
+  });
 
   return (
     <div>
