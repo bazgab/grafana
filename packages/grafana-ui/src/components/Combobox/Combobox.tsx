@@ -204,10 +204,18 @@ export const Combobox = <T extends string | number>({
 
       if (isOpen && isAsync) {
         setAsyncLoading(true);
-        loadOptions('').then((options) => {
-          setItems(options);
-          setAsyncLoading(false);
-        });
+        loadOptions('')
+          .then((options) => {
+            setItems(options);
+            setAsyncLoading(false);
+          })
+          .catch((err) => {
+            if (!(err instanceof StaleResultError)) {
+              // TODO: handle error
+              setAsyncLoading(false);
+              throw err;
+            }
+          });
         return;
       }
     },
